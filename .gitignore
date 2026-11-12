@@ -1,0 +1,9 @@
+bin/
+obj/
+node_modules/
+dist/
+.vs/
+*.user
+.env
+frontend/node_modules/
+frontend/dist/
