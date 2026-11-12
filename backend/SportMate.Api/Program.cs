@@ -16,9 +16,16 @@ builder.Services.AddScoped<CurrentUserAccessor>();
 builder.Services.AddScoped<StripeGateway>();
 builder.Services.AddScoped<BookingService>();
 builder.Services.AddCors(options => options.AddPolicy("web", policy =>
-    policy.WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+{
+    var frontend = builder.Configuration["FrontendUrl"]?.TrimEnd('/') ?? "http://localhost:5173";
+    var origins = new[] { "http://localhost:5173", "http://127.0.0.1:5173", frontend }
+        .Where(origin => !string.IsNullOrWhiteSpace(origin))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+    policy.WithOrigins(origins)
         .AllowAnyHeader()
-        .AllowAnyMethod()));
+        .AllowAnyMethod();
+}));
 
 var app = builder.Build();
 
