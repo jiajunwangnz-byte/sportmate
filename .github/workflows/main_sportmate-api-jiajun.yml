@@ -9,6 +9,7 @@ on:
       - 'main'
     paths:
       - 'backend/**'
+      - 'frontend/**'
       - '.github/workflows/main_sportmate-api-*.yml'
   workflow_dispatch:
 
@@ -25,6 +26,22 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Copy frontend into API wwwroot
+        run: |
+          mkdir -p backend/SportMate.Api/wwwroot
+          cp -r frontend/dist/. backend/SportMate.Api/wwwroot/
 
       - name: Build with dotnet
         run: dotnet build backend/SportMate.Api/SportMate.Api.csproj --configuration Release

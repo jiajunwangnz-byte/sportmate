@@ -29,6 +29,9 @@ builder.Services.AddCors(options => options.AddPolicy("web", policy =>
 
 var app = builder.Build();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseMiddleware<ApiExceptionMiddleware>();
 if (app.Environment.IsDevelopment())
     app.MapOpenApi();
@@ -36,6 +39,7 @@ app.UseCors("web");
 app.UseMiddleware<CurrentUserMiddleware>();
 app.MapControllers();
 app.MapGet("/api/health", () => Results.Ok(new { ok = true }));
+app.MapFallbackToFile("index.html");
 
 await using (var scope = app.Services.CreateAsyncScope())
 {
